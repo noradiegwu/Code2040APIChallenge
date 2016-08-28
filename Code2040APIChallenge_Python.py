@@ -5,8 +5,8 @@ import requests
 # POST to here: http://challenge.code2040.org/api/register
 # My API Token: b17d06b3ed94ee326a5f76be8999da9b
 
-registrationJSON = {'token': 'b17d06b3ed94ee326a5f76be8999da9b', 'github': 'https://github.com/noradiegwu/Code2040APIChallenge'}
+registration_json = {'token': 'b17d06b3ed94ee326a5f76be8999da9b', 'github': 'https://github.com/noradiegwu/Code2040APIChallenge'}
 
-response = requests.post("http://challenge.code2040.org/api/register", data = registrationJSON)
+response = requests.post("http://challenge.code2040.org/api/register", data = registration_json)
 
 print response.status_code
