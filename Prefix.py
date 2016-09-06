@@ -1,5 +1,6 @@
 import requests
 import json
+from sys import getsizeof
 
 
 token_dict = {'token': 'b17d06b3ed94ee326a5f76be8999da9b'}
@@ -14,33 +15,30 @@ parsed_json = json.loads(response.text)
 prefix = parsed_json.get("prefix", "")
 arr = parsed_json.get("array", [])
 
-print arr, prefix
-# remove the strings containing the prefix
 nofix_arr = []
-for s in arr:
+for s in arr: # O(n)
     if prefix not in s:
-        nofix_arr.append(s)
+        nofix_arr.append(s) # O(1) * n - number of strings containing prefix (worst case all strings)
 
-print nofix_arr
-
-# # original idea
-# for s in arr:
-#     if prefix in s:
-#         arr.remove(s)
-# # with this i had the intention of not needing to create a new array and simply editing the existing one
-# # but this created an issue because of how python interprets arrays as lists
-# # when I would remove a string at that index, the list would shift down from there
-# # and continue iterating while skipping over the string that shifted into the previous posn
-# # so this loop would remove some strings while ignoring the strings directly after the ones removed
-# # especially annoying when the prefix is in two (or three) consecutive strings
-# # while googling, i found list comprehension: arr = [s for s in arr if prefix not in s] which did the trick
-# # but as it turns out, python essentially creates a list of None values with comprehension
-# # so considering the "zen of python", readibility conquers here
-# # still in search of a solution!
+# count = 0
+# for i in xrange(len(arr)): # O(n)
+#     a = i - count # create flexible indexer
+#     print "a", id(a), "size:", getsizeof(a)
+#     # though I did not need to create a new list, because integers are immutable,
+#     # with every reassignment python is allocating new memory for that new integer
+#     # because the memory was allocated 11 times (including the first time) and the size of this int on my machine is 24 bytes
+#     # the memory savings here was actually 8 bytes. Small but still cool to see.
+#     # But the time cost, with my limited googled knowledge, seems to be much bigger
+#     # at O(n) + O(n^2) compared to the first one's O(n) + O(n) which I believe reduces to O(n)
+#     # So comparing the time and space usage, the above algorithm is more efficient
+#     if prefix in arr[a]: # if prefix in that posn
+#         count+=1 # tally it
+#         del arr[a] # and remove the word in that spot # O(n) run - at worst - n times --> O(n^2)
 
 val_dict = {'token': 'b17d06b3ed94ee326a5f76be8999da9b', 'array': nofix_arr}
 
 # post the array
 validate = requests.post("http://challenge.code2040.org/api/prefix/validate", json = val_dict)
 
+# check response
 print validate.status_code, validate.text
